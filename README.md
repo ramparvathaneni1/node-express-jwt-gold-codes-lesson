@@ -34,7 +34,9 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
 
 #### Set-up
 
-1. `cd` into the starter code folder and npm install `npm install jsonwebtoken express-jwt`
+1. git clone this repo then `cd` into the starter code folder.
+
+1. npm install a few packages: `npm install jsonwebtoken express-jwt`
 
 1. We're using an npm package called `dotenv` to set up an environment variable secret key for our token. In the root of the starter folder, `touch .env` and add the `JWT_SECRET` below (_it could be anything_).
 
