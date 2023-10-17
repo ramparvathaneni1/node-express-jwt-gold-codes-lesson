@@ -148,7 +148,7 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
     module.exports = router;
     ```
 
-2. Run our code and decode the JWT on [jwt.io](https://jwt.io). Note - To verify the token, add the `JWT_SECRET`` to the VERIFY SIGNATURE area on the right.
+2. Run our code and decode the JWT on [jwt.io](https://jwt.io). Note - To verify the token, add the `JWT_SECRET` to the VERIFY SIGNATURE area on the right.
 
     ```js
     {
