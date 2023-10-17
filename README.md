@@ -110,7 +110,7 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
     module.exports = Auth;
     ```
 
-1. In `controllers/api` let's add to the `/authoriztion` route. We will accept the username and password received from the browser form (for this exercise we've hardcoded the username and password in the auth model). 
+1. In `controllers/api` let's add to the `/authorization` route. We will accept the username and password received from the browser form (for this exercise we've hardcoded the username and password in the auth model). 
 
     Add in claims, which will get baked into the token. If there's a valid login attempt create a new token, send the token back for client to store. Our router now looks like:
 
