@@ -1,0 +1,36 @@
+<h1>Get Gold Codes</h1>
+
+<%= user.username %>
+<%= token %>
+
+<button type="button" id="getCodes" name="button">GET MY CODES</button>
+
+<div id="heresTheCodes"></div>
+
+
+
+<script type="text/javascript">
+  const user = '<%= user.username %>'
+  const token = '<%= token %>'
+
+  localStorage.setItem('token', token);
+  localStorage.setItem('user', user);
+
+$(document).ready(function() {
+  $("#getCodes").on("click", function(){
+    console.log('clicked');
+
+    $.ajax({
+      url: 'http://localhost:3000/api/gold_codes',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    }).done(function(codes) {
+      $('#heresTheCodes').html(codes);
+      console.log('codes', codes);
+    }).fail(function(err) {
+      console.log('Error: ', err);
+    });
+  });
+});
+</script>

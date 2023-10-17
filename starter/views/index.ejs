@@ -1,0 +1,11 @@
+<% if (ready) { %>
+  <p>Ready to go!</p>
+<% } else { %>
+  <p>I need more time...</p>
+<% } %>
+
+<form action='/api/authorization' method="post">
+  USERNAME: <input type="text" name="username" value="">
+  PASSWORD: <input type="text" name="password" value="">
+  <input type="submit" name="" value="SUBMIT">
+</form>
