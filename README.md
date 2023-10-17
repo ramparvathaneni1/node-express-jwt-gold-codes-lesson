@@ -201,6 +201,8 @@ To access protected routes though, a client have to send us the JWT we issued wi
 1. Let's create a route that will allow POTUS to obtain the [gold codes](https://en.wikipedia.org/wiki/Gold_Codes), which allows them to authorize a nuclear attack. 
 
     ```js
+    // controllers/api.js
+    
     router.get('/gold_codes', (req, res) => {
       const fakeCode = () => {
         return Math.random().toString(36).substr(2, 10).toUpperCase();
