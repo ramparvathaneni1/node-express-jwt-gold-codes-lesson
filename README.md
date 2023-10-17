@@ -285,6 +285,17 @@ To access protected routes though, a client have to send us the JWT we issued wi
 
 What we have is great if we're only accessing our API through Postman only, but what if we need to access it through code in a client application? Let's see how we might do that with AJAX. 
 
+1. In the `controllers/api.js` `/authorization` route, change the `res.json` to this:
+
+    ```js
+    res.render('loggedin', {
+      user: claims,
+      token: token
+    });    
+    ```
+    
+1. Go into `public/js/main.js` and uncomment all the code.
+
 1. We already know how to issue a regular POST request with form parameters, so we could simply use `$.ajax` to send `username`/`password` and get the token that way, but what then? We can at this point use [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) to set and retrieve the auth token required to make some calls.
 
     _This code is provided in the views/loggedin.ejs file for reference._
