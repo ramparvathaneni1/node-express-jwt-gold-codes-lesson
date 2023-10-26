@@ -32,12 +32,12 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
 
 ## Codealong
 
-#### Set-up
-
-NOTE - if you get a message that a port is in use, you can kill it with this command: `sudo kill -9 $(sudo lsof -t -i:3000)`
+**NOTE - if you get a message that a port is in use, you can kill it with this command: `sudo kill -9 $(sudo lsof -t -i:3000)`**
 
 - Replace `3000` with the port number you want to stop.
 - [Reference](https://tecadmin.net/kill-process-on-specific-port/)
+
+#### Set-up
 
 1. git clone this repo then `cd` into the starter code folder.
 
