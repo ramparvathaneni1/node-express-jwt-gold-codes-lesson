@@ -1,5 +1,18 @@
 # API Authentication with JWT
 
+- [API Authentication with JWT](#api-authentication-with-jwt)
+    - [Learning Objectives](#learning-objectives)
+  - [Intro](#intro)
+    - [Kicking it up a notch](#kicking-it-up-a-notch)
+      - [Just like cookies, mmmm....](#just-like-cookies-mmmm)
+  - [Codealong](#codealong)
+      - [Set-up](#set-up)
+      - [Create API Controller](#create-api-controller)
+      - [Create an Auth model](#create-an-auth-model)
+      - [Protected Routes](#protected-routes)
+  - [Accessing Protected Endpoints with AJAX](#accessing-protected-endpoints-with-ajax)
+  - [Resources](#resources)
+
 ### Learning Objectives
 
 - Understand why authentication tokens are commonly used when interacting with APIs
@@ -61,6 +74,8 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
 
     ```js
     // controllers/api.js
+    const jwt = require('jsonwebtoken'); // sign, issue, verify JWT tokens 
+    const jwtCheck = require('express-jwt'); // middleware for checking JWT signature
     const express = require('express');
     const router = express.Router();
 
@@ -75,7 +90,7 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
     module.exports = router;
     ```
 
-1. `require` at the top of **controllers/api.js**
+1. Add the following `require` functions at the top of **controllers/api.js**
 
     ```js
     // controllers/api.js
@@ -87,13 +102,13 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
     // ...
     ```
 
-1. We need to let the rest of the application know about the new api controller, so we wire it up in **app.js**
+1. We need to let the rest of the application know about the new api controller, so we wire it up in **app.js** (*not* `api.js`).
 
     ```js
     // app.js
     // ...
 
-    app.use('/', require('./controllers/index')); // aleady in there
+    //Add the following directly under app.use('/', require('./controllers/index'));
     app.use('/api', require('./controllers/api'));
 
     // ...
@@ -115,9 +130,9 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
     module.exports = Auth;
     ```
 
-1. In `controllers/api` let's add to the `/authorization` route. We will accept the username and password received from the browser form (for this exercise we've hardcoded the username and password in the auth model). 
+1. In `controllers/api` add to the `/authorization` route. We will accept the username and password received from the browser form (for this exercise we've hardcoded the username and password in the auth model). 
 
-    Add in claims, which will get baked into the token. If there's a valid login attempt create a new token, send the token back for client to store. Our router now looks like:
+    Add in claims, which will get baked into the token. If there's a valid login attempt create a new token, send the token back for client to store. Ensure your `api.js` now looks like the following:
 
     ```js
     // controllers/api.js
@@ -153,7 +168,7 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
     module.exports = router;
     ```
 
-2. Run our code and decode the JWT on [jwt.io](https://jwt.io). Note - To verify the token, add the `JWT_SECRET` to the VERIFY SIGNATURE area on the right.
+2. Run our code and decode the JWT on [jwt.io](https://jwt.io). Note - To verify the token, add the `JWT_SECRET` to the VERIFY SIGNATURE field on the right of the webpage.
 
     ```js
     {
@@ -165,16 +180,25 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
 
 3. This is essentially an "infinite" access token because it technically never expires unless we change out secret or delete it from our database. We should limit how long an access token is valid in order to decrease the chance of this token being compromised sometime in the future. 
 
-    To do that, we'll add in an expiration time also. 
+    To do that, we'll add in an expiration time also in our `api.js`. In your router's authorization endpoint, add the following:
 
       ```js
       const options = {
         expiresIn: '2d'
       }
+      ```
+
+      Change the following line
+      ```js
+      const token = jwt.sign(claims, process.env.JWT_SECRET);
+      ```
+
+      To this:
+      ```js
       const token = jwt.sign(claims, process.env.JWT_SECRET, options);
       ```
 
-      Take a look at our JWT decoded now: 
+      Relogin to the app and take a look at our JWT decoded now: 
 
       ```js
       {
@@ -231,13 +255,13 @@ To access protected routes though, a client have to send us the JWT we issued wi
 
     ![postman headers](./assets/gold_codes.png)
 
-1. We definitely don't want to allow just anyone to access these codes! Let's lock this endpoint down. If you remember, Express is made up of a series of middleware calls. We can inject whatever middleware we want within a route. Let's take advantage of this and have `express-jwt` check for a valid JWT token with every request to this route. 
+1. We definitely don't want to allow just anyone to access these codes! Let's lock this endpoint down. If you remember, Express is made up of a series of middleware calls. We can inject whatever middleware we want within a route. Let's take advantage of this and have `express-jwt` check for a valid JWT token with every request to this route. Insert the following into the parameters of your `router.get` method. 
 
     ```js
     jwtCheck({ secret: process.env.JWT_SECRET })
     ```
 
-    Modify our route to look like this now: 
+    Make sure your route looks like this now: 
 
     ```js
     router.get('/gold_codes', jwtCheck({ secret: process.env.JWT_SECRET }), (req, res) => {
@@ -290,7 +314,16 @@ To access protected routes though, a client have to send us the JWT we issued wi
 
 What we have is great if we're only accessing our API through Postman only, but what if we need to access it through code in a client application? Let's see how we might do that with AJAX. 
 
-1. In the `controllers/api.js` `/authorization` route, change the `res.json` to this:
+1. In the `controllers/api.js` `/authorization` route, change the `res.json`:
+
+    ```js
+    res.json({
+      user: claims,
+      token: token
+    });
+    ```
+    
+    To this:
 
     ```js
     res.render('loggedin', {
@@ -299,11 +332,11 @@ What we have is great if we're only accessing our API through Postman only, but 
     });    
     ```
     
-1. Go into `public/js/main.js` and uncomment all the code.
+2. Go into `public/js/main.js` and uncomment all the code.
 
-1. We already know how to issue a regular POST request with form parameters, so we could simply use `$.ajax` to send `username`/`password` and get the token that way, but what then? We can at this point use [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) to set and retrieve the auth token required to make some calls.
+3. We already know how to issue a regular POST request with form parameters, so we could simply use `$.ajax` to send `username`/`password` and get the token that way, but what then? We can at this point use [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) to set and retrieve the auth token required to make some calls.
 
-    _This code is provided in the views/loggedin.ejs file for reference._
+    _This code is provided in the `views/loggedin.ejs` file for reference._
 
     ```js
     // Saving the auth token
@@ -315,7 +348,7 @@ What we have is great if we're only accessing our API through Postman only, but 
     var token = localStorage.getItem('token');
     ```
 
-1. Once we have the token, we can set the token in the AJAX headers before a request is made. 
+4. Once we have the token, we can set the token in the AJAX headers before a request is made. 
 
     ```js
     $.ajax({
