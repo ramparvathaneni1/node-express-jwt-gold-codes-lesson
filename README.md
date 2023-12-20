@@ -52,17 +52,19 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
 
 #### Set-up
 
-1. git clone this repo then `cd` into the starter code folder.
+1. **Fork this repository to your personal GitHub Enterprise account.**
 
-1. npm install a few packages: `npm install jsonwebtoken express-jwt`
+2. `git clone` *your forked repo* then `cd` into the `starter` code folder.
 
-1. We're using an npm package called `dotenv` to set up an environment variable secret key for our token. In the root of the starter folder, `touch .env` and add the `JWT_SECRET` below (_it could be anything_).
+3. npm install a few packages: `npm install jsonwebtoken express-jwt`
+
+4. We're using an npm package called `dotenv` to set up an environment variable secret key for our token. In the root of the starter folder, `touch .env` and add the `JWT_SECRET` below (_it could be anything_).
 
     ```js
     JWT_SECRET='somethingsupersecretandhardtoguess'
     ```
 
-1. You can start your server with `nodemon app.js`. In the browser, go to `localhost:3000` and you should see this.
+5. You can start your server with `nodemon app.js`. In the browser, go to `localhost:3000` and you should see this.
 
     ![](./assets/express-starter.png)
 
