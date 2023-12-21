@@ -53,26 +53,25 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
 #### Set-up
 
 1. **Fork this repository to your personal GitHub Enterprise account.**
-
-2. `git clone` *your forked repo* then `cd` into the `starter` code folder.
-
-3. npm install a few packages: `npm install jsonwebtoken express-jwt`
-
-4. We're using an npm package called `dotenv` to set up an environment variable secret key for our token. In the root of the starter folder, `touch .env` and add the `JWT_SECRET` below (_it could be anything_).
-
+2. `cd` into your `/home/USERNAME/mef` directory.
+2. `git clone` *your forked repo*.
+3. `cd` into the `starter` code folder.
+4. npm install a few packages: `npm install jsonwebtoken express-jwt`
+5. We're using an npm package called `dotenv` to set up an environment variable secret key for our token. In the starter directory, enter `touch .env`
+6. Open `.env` in VS Code and add the `JWT_SECRET` below (_it could be anything_).
     ```js
     JWT_SECRET='somethingsupersecretandhardtoguess'
     ```
-
-5. You can start your server with `nodemon app.js`. In the browser, go to `localhost:3000` and you should see this.
-
+7. Start your server with `nodemon app.js`.
+8. In your web browser, go to `http://localhost:3000` and you should see this.
     ![](./assets/express-starter.png)
-
 
 
 #### Create API Controller
 
-1. Create an API controller, **/controllers/api.js**. Create a route within the API controller to issue auth tokens.
+1. In the `controllers` directory, create a file named `api.js`.
+1. Open `api.js` in VS Code.
+1. Create a route within the API controller to issue auth tokens.
 
     ```js
     // controllers/api.js
@@ -83,54 +82,41 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
 
     router.post('/authorization', (req, res) => {
       // this is where you could do something like validate a username/password
-
       // collect any information we want to include in the token, like the user's info
-
       // make a token & send it as JSON
     });
 
     module.exports = router;
     ```
-
-1. Add the following `require` functions at the top of **controllers/api.js**
-
-    ```js
-    // controllers/api.js
-    // ...
-
-    const jwt = require('jsonwebtoken'); // sign, issue, verify JWT tokens 
-    const jwtCheck = require('express-jwt'); // middleware for checking JWT signature
-
-    // ...
-    ```
-
-1. We need to let the rest of the application know about the new api controller, so we wire it up in **app.js** (*not* `api.js`).
+1. We need to let the rest of the application know about the new api controller, so we wire it up in **`app.js`** (*not* `api.js`). Open `app.js` in the `starter` directory.
 
     ```js
     // app.js
     // ...
 
-    //Add the following directly under app.use('/', require('./controllers/index'));
-    app.use('/api', require('./controllers/api'));
+    //Add the following directly under "app.use('/', require('./controllers/index'));"
+   
+   app.use('/api', require('./controllers/api'));
 
     // ...
     ```
 
 #### Create an Auth model 
 
-1. Create a `models/auth.js` file and add this `validate` method. __NOTE-__ for this lesson the username is `admin` and the password is `securepassword`.
+1. Create a `models/auth.js` file and open it in your editor.
+1. Add this `validate` method.
 
     ```js
     // models/auth.js
     class Auth {
       static validate(username, password) {
-        // We could validate the username/password from a database instead here
         return (username === 'admin' && password === 'securepassword');
       }
     }
 
     module.exports = Auth;
     ```
+    __NOTE__ for this lesson the username is hardcoded as `admin` and the password is `securepassword`. Normally you would validate the username/password from a database or identity store instead of referring to hardcoded credentials.
 
 1. In `controllers/api` add to the `/authorization` route. We will accept the username and password received from the browser form (for this exercise we've hardcoded the username and password in the auth model). 
 
