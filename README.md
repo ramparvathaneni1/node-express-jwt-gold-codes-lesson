@@ -105,7 +105,6 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
 
 1. Create a `models/auth.js` file and open it in your editor.
 1. Add this `validate` method.
-
     ```js
     // models/auth.js
     class Auth {
@@ -116,11 +115,10 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
 
     module.exports = Auth;
     ```
-    __NOTE__ for this lesson the username is hardcoded as `admin` and the password is `securepassword`. Normally you would validate the username/password from a database or identity store instead of referring to hardcoded credentials.
-
-1. In `controllers/api` add to the `/authorization` route. We will accept the username and password received from the browser form (for this exercise we've hardcoded the username and password in the auth model). 
-
-    Add in claims, which will get baked into the token. If there's a valid login attempt create a new token, send the token back for client to store. Ensure your `api.js` now looks like the following:
+    __NOTE:__ For this lesson the username is hardcoded as `admin` and the password is `securepassword`. Normally you would validate the username/password from a database or identity store instead of referring to hardcoded credentials.
+1. In `controllers/api.js` add the following code to the `/authorization` route to ensure your `api.js` looks like the following:
+   - We will accept the username and password received from the browser form (for this exercise we've hardcoded the username and password in the auth model). 
+   - We will also add in chaims which will get baked into the token. If there's a valid login attempt create a new token, send the token back for client to store. 
 
     ```js
     // controllers/api.js
@@ -156,7 +154,7 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
     module.exports = router;
     ```
 
-2. Run our code and decode the JWT on [jwt.io](https://jwt.io). Note - To verify the token, add the `JWT_SECRET` to the VERIFY SIGNATURE field on the right of the webpage.
+2. Run your code and decode the JWT on [jwt.io](https://jwt.io). **Note:** To verify the token, add the `JWT_SECRET` to the `VERIFY SIGNATURE` field on the right of the webpage.
 
     ```js
     {
@@ -166,9 +164,7 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
     }
     ```
 
-3. This is essentially an "infinite" access token because it technically never expires unless we change out secret or delete it from our database. We should limit how long an access token is valid in order to decrease the chance of this token being compromised sometime in the future. 
-
-    To do that, we'll add in an expiration time also in our `api.js`. In your router's authorization endpoint, add the following:
+3. This is essentially an "infinite" access token because it technically never expires unless we change our secret or delete it from our database. We should limit how long an access token is valid in order to decrease the chance of this token being compromised sometime in the future.  To do that, we'll add in an expiration time also in our `controllers/api.js`. In your router's authorization endpoint, add the following:
 
       ```js
       const options = {
@@ -176,7 +172,7 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
       }
       ```
 
-      Change the following line
+      Change the following line:
       ```js
       const token = jwt.sign(claims, process.env.JWT_SECRET);
       ```
@@ -186,7 +182,7 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
       const token = jwt.sign(claims, process.env.JWT_SECRET, options);
       ```
 
-      Relogin to the app and take a look at our JWT decoded now: 
+      Relogin to the app and decode the JWT again. The decoded JWT should look something like this: 
 
       ```js
       {
@@ -197,7 +193,7 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
       }
       ```
 
-#### Protected Routes
+#### Unprotected Routes
 
 To create any unprotected routes that don't require authorization, just continue writing routes as we have been. 
 
@@ -210,10 +206,12 @@ router.get('/unprotected', (req, res) => {
 });
 ```
 
-To access protected routes though, a client have to send us the JWT we issued within the headers. Let's create a protected route. Here we'll use `express-jwt` middleware to do two things: 
+#### Protected Routes
+
+To access protected routes though, a client has to send us the JWT our API issued within the headers. Let's create a protected route. Here we'll use the `express-jwt` middleware to do two things: 
 
 - Verify the token sent is valid (using the signature and expiration time)
-- Obtain any payload data created with the token, such as userId, etc and make it available to us through `req.user` within Express.
+- Obtain any payload data created with the token, such as userId, and make it available to us through `req.user` within Express.
 
 1. Let's create a route that will allow POTUS to obtain the [gold codes](https://en.wikipedia.org/wiki/Gold_Codes), which allows them to authorize a nuclear attack. 
 
@@ -243,11 +241,7 @@ To access protected routes though, a client have to send us the JWT we issued wi
 
     ![postman headers](./assets/gold_codes.png)
 
-1. We definitely don't want to allow just anyone to access these codes! Let's lock this endpoint down. If you remember, Express is made up of a series of middleware calls. We can inject whatever middleware we want within a route. Let's take advantage of this and have `express-jwt` check for a valid JWT token with every request to this route. Insert the following into the parameters of your `router.get` method. 
-
-    ```js
-    jwtCheck({ secret: process.env.JWT_SECRET })
-    ```
+1. We definitely don't want to allow just anyone to access these codes! Let's lock this endpoint down. If you remember, Express is made up of a series of middleware calls. We can inject whatever middleware we want within a route. Let's take advantage of this and have `express-jwt` check for a valid JWT token with every request to this route. Insert the following into the parameters of your `router.get` method of `controllers/api.js`.
 
     Make sure your route looks like this now: 
 
@@ -257,24 +251,7 @@ To access protected routes though, a client have to send us the JWT we issued wi
     });
     ```
 
-1. If a user doesn't provide us with a valid token, they'll get an unauthorized error page. Let's make it more REST API friendly by changing the error to a JSON response. 
-
-    In `app.js`, change the following: 
-
-    ```js
-    // app.js
-    app.use((err, req, res, next) => {
-      // set locals, only providing error in development
-      res.locals.message = err.message;
-      res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-      // render the error page
-      res.status(err.status || 500);
-      res.render('error');
-    });
-    ```
-
-    To: 
+1. If a user doesn't provide us with a valid token, they'll get an unauthorized error page. To make it more REST API friendly, the error will be sent as a JSON response.
 
     ```js
     // app.js
@@ -294,15 +271,17 @@ To access protected routes though, a client have to send us the JWT we issued wi
     });
     ```
 
-1. To access a protected resource, we'll need to include the JWT in the authorization header of the request. For instance, in Postman add the following header to the request: 
+1. To access a protected resource, we'll need to include the JWT in the authorization header of the GET request. For instance, in Postman add the following `Authorization` header to the request: 
 
     ![postman headers](./assets/gold_codes_headers.png)
+    
+1. Execute the request and verify you see the gold codes.
 
 ## Accessing Protected Endpoints with AJAX
 
 What we have is great if we're only accessing our API through Postman only, but what if we need to access it through code in a client application? Let's see how we might do that with AJAX. 
 
-1. In the `controllers/api.js` `/authorization` route, change the `res.json`:
+1. In the `controllers/api.js` `/authorization` route, change the `res.json` from:
 
     ```js
     res.json({
@@ -320,11 +299,9 @@ What we have is great if we're only accessing our API through Postman only, but 
     });    
     ```
     
-2. Go into `public/js/main.js` and uncomment all the code.
+1. We already know how to issue a regular POST request with form parameters, so we could simply use `$.ajax` to send `username`/`password` and get the token that way, but what then? We can at this point use [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) to set and retrieve the auth token required to make some calls.
 
-3. We already know how to issue a regular POST request with form parameters, so we could simply use `$.ajax` to send `username`/`password` and get the token that way, but what then? We can at this point use [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) to set and retrieve the auth token required to make some calls.
-
-    _This code is provided in the `views/loggedin.ejs` file for reference._
+    The following code is provided in the `views/loggedin.ejs` file for reference.
 
     ```js
     // Saving the auth token
