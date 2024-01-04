@@ -308,11 +308,6 @@ What we have is great if we're only accessing our API through Postman only, but 
     localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiY3VzdG9tIjoiYW55IGN1c3RvbSBkYXRhIiwiaWF0IjoxNTA1ODUyMDM1fQ.hP5d-Qv89bLMeCxgl3keqmH_rScvCiqOdF59NQrZ-Pk');
     ``` 
 
-    ```js
-    // Retrieving the auth token for use in an AJAX call
-    var token = localStorage.getItem('token');
-    ```
-
 4. Once we have the token, we can set the token in the AJAX headers before a request is made. 
 
     ```js
