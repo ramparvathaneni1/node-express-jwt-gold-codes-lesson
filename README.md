@@ -9,6 +9,7 @@
       - [Set-up](#set-up)
       - [Create API Controller](#create-api-controller)
       - [Create an Auth model](#create-an-auth-model)
+      - [Unprotected Routes](#unprotected-routes)
       - [Protected Routes](#protected-routes)
   - [Accessing Protected Endpoints with AJAX](#accessing-protected-endpoints-with-ajax)
   - [Resources](#resources)
@@ -56,7 +57,7 @@ Applications can save a JWT somewhere on a user's computer, just like a cookie. 
 2. `cd` into your `/home/USERNAME/mef` directory.
 2. `git clone` *your forked repo*.
 3. `cd` into the `starter` code folder.
-4. npm install a few packages: `npm install jsonwebtoken express-jwt`
+4. Install the packages from package.json: `npm install`
 5. We're using an npm package called `dotenv` to set up an environment variable secret key for our token. In the starter directory, enter `touch .env`
 6. Open `.env` in VS Code and add the `JWT_SECRET` below (_it could be anything_).
     ```js
