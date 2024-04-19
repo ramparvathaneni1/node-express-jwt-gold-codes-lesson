@@ -13,6 +13,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(ejsLayouts);
 
 app.use('/', require('./controllers/index'));
+app.use('/api', require('./controllers/api')); // anything /api will be routed to API contoller
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

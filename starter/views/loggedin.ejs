@@ -26,7 +26,8 @@ $(document).ready(function() {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
     }).done(function(codes) {
-      $('#heresTheCodes').html(codes);
+      let codeStr = codes.join("<br>");
+      $('#heresTheCodes').html(codeStr);
       console.log('codes', codes);
     }).fail(function(err) {
       console.log('Error: ', err);
